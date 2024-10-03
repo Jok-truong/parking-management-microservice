@@ -9,16 +9,8 @@ import {
   Query,
 } from '@nestjs/common'
 
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger'
-import { AllowAuthenticated, GetUser } from 'src/common/auth/auth.decorator'
-import { checkRowLevelPermission } from 'src/common/auth/util'
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { PrismaService } from 'src/common/prisma/prisma.service'
-import { GetUserType } from 'src/common/types'
 import { CreateUser } from './dtos/create.dto'
 import { UserQueryDto } from './dtos/query.dto'
 import { UpdateUser } from './dtos/update.dto'
@@ -29,22 +21,30 @@ import { UserEntity } from './entity/user.entity'
 export class UsersController {
   constructor(private readonly prisma: PrismaService) {}
 
-  @AllowAuthenticated()
-  @ApiBearerAuth()
+  // @AllowAuthenticated()
+  // @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   @Post()
-  create(@Body() createUserDto: CreateUser, @GetUser() user: GetUserType) {
-    checkRowLevelPermission(user, createUserDto.uid)
+  create(
+    @Body() createUserDto: CreateUser,
+    // @GetUser() user: GetUserType
+  ) {
+    // checkRowLevelPermission(user, createUserDto.uid)
     return this.prisma.user.create({ data: createUserDto })
   }
 
   @ApiOkResponse({ type: [UserEntity] })
   @Get()
-  findAll(@Query() { skip, take, order, sortBy }: UserQueryDto) {
+  findAll(
+    @Query() { skip, take, order, sortBy, search, searchBy }: UserQueryDto,
+  ) {
     return this.prisma.user.findMany({
       ...(skip ? { skip: +skip } : null),
       ...(take ? { take: +take } : null),
       ...(sortBy ? { orderBy: { [sortBy]: order || 'asc' } } : null),
+      ...(searchBy
+        ? { where: { [searchBy]: { contains: search, mode: 'insensitive' } } }
+        : null),
     })
   }
 
@@ -55,28 +55,31 @@ export class UsersController {
   }
 
   @ApiOkResponse({ type: UserEntity })
-  @ApiBearerAuth()
-  @AllowAuthenticated()
+  // @ApiBearerAuth()
+  // @AllowAuthenticated()
   @Patch(':uid')
   async update(
     @Param('uid') uid: string,
     @Body() updateUserDto: UpdateUser,
-    @GetUser() user: GetUserType,
+    // @GetUser() user: GetUserType,
   ) {
     const userInfo = await this.prisma.user.findUnique({ where: { uid } })
-    checkRowLevelPermission(user, userInfo.uid)
+    // checkRowLevelPermission(user, userInfo.uid)
     return this.prisma.user.update({
       where: { uid },
       data: updateUserDto,
     })
   }
 
-  @ApiBearerAuth()
-  @AllowAuthenticated()
+  // @ApiBearerAuth()
+  // @AllowAuthenticated()
   @Delete(':uid')
-  async remove(@Param('uid') uid: string, @GetUser() user: GetUserType) {
+  async remove(
+    @Param('uid') uid: string,
+    //  @GetUser() user: GetUserType
+  ) {
     const userInfo = await this.prisma.user.findUnique({ where: { uid } })
-    checkRowLevelPermission(user, userInfo.uid)
+    // checkRowLevelPermission(user, userInfo.uid)
     return this.prisma.user.delete({ where: { uid } })
   }
 }
