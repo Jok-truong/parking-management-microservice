@@ -63,7 +63,7 @@ export class UsersController {
     @Body() updateUserDto: UpdateUser,
     // @GetUser() user: GetUserType,
   ) {
-    const userInfo = await this.prisma.user.findUnique({ where: { uid } })
+    // const userInfo = await this.prisma.user.findUnique({ where: { uid } })
     // checkRowLevelPermission(user, userInfo.uid)
     return this.prisma.user.update({
       where: { uid },
@@ -78,7 +78,7 @@ export class UsersController {
     @Param('uid') uid: string,
     //  @GetUser() user: GetUserType
   ) {
-    const userInfo = await this.prisma.user.findUnique({ where: { uid } })
+    // const userInfo = await this.prisma.user.findUnique({ where: { uid } })
     // checkRowLevelPermission(user, userInfo.uid)
     return this.prisma.user.delete({ where: { uid } })
   }
