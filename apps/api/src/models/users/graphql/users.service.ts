@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import * as bc from 'bcryptjs'
+import * as bcrypt from 'bcryptjs'
 import { PrismaService } from 'src/common/prisma/prisma.service'
 import { v4 as uuid } from 'uuid'
 import {
@@ -15,6 +15,7 @@ import {
 } from './dtos/create-user.input'
 import { FindManyUserArgs, FindUniqueUserArgs } from './dtos/find.args'
 import { UpdateUserInput } from './dtos/update-user.input'
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -45,16 +46,18 @@ export class UsersService {
     const existingUser = await this.prisma.credentials.findUnique({
       where: { email },
     })
-    if (existingUser)
-      throw new BadRequestException('User already exists with this email')
+
+    if (existingUser) {
+      throw new BadRequestException('User already exists with this email.')
+    }
 
     // Hash the password
-    const salt = bc.genSaltSync()
-    const hashedPassword = bc.hashSync(password, salt)
+    const salt = bcrypt.genSaltSync()
+    const passwordHash = bcrypt.hashSync(password, salt)
 
     const uid = uuid()
 
-    const user = await this.prisma.user.create({
+    return this.prisma.user.create({
       data: {
         uid,
         name,
@@ -62,7 +65,7 @@ export class UsersService {
         Credentials: {
           create: {
             email,
-            password: hashedPassword,
+            passwordHash,
           },
         },
         AuthProvider: {
@@ -75,7 +78,6 @@ export class UsersService {
         Credentials: true,
       },
     })
-    return user
   }
 
   async login({ email, password }: LoginInput): Promise<LoginOutput> {
@@ -87,26 +89,28 @@ export class UsersService {
         Credentials: true,
       },
     })
+
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password')
+      throw new UnauthorizedException('Invalid email or password.')
     }
 
-    const isPasswordValid = bc.compareSync(password, user.Credentials.password)
+    const isPasswordValid = bcrypt.compareSync(
+      password,
+      user.Credentials.passwordHash,
+    )
 
-    if (!isPasswordValid)
-      throw new UnauthorizedException('Invalid email or password')
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid email or password.')
+    }
 
     const jwtToken = this.jwtService.sign(
       { uid: user.uid },
-      { algorithm: 'HS256' },
+      {
+        algorithm: 'HS256',
+      },
     )
-    return { token: jwtToken, user }
-  }
 
-  create(createUserInput: RegisterWithProviderInput) {
-    return this.prisma.user.create({
-      data: createUserInput,
-    })
+    return { token: jwtToken, user }
   }
 
   findAll(args: FindManyUserArgs) {
