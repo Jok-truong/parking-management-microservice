@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
   //stackoverflow.com/questions/78138516/how-to-redirect-to-apollo-graphql-sandbox-from-nestjs-app-in-local
-  https: app.enableCors({
+  app.enableCors({
     origin: '*',
     credentials: true,
     // all headers that client are allowed to use

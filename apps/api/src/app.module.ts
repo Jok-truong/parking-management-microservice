@@ -7,6 +7,7 @@ import { join } from 'path'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { PrismaModule } from './common/prisma/prisma.module'
+import { BookingsModule } from './models/bookings/bookings.module'
 import { UsersModule } from './models/users/users.module'
 
 const MAX_AGE = 24 * 60 * 60
@@ -29,6 +30,7 @@ const MAX_AGE = 24 * 60 * 60
     }),
     PrismaModule,
     UsersModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

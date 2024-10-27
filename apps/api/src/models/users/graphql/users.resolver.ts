@@ -1,8 +1,19 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql'
 import { AllowAuthenticated, GetUser } from 'src/common/auth/auth.decorator'
 import { checkRowLevelPermission } from 'src/common/auth/util'
 import { PrismaService } from 'src/common/prisma/prisma.service'
 import { GetUserType } from 'src/common/types'
+import { Admin } from 'src/models/admins/graphql/entity/admin.entity'
+import { Customer } from 'src/models/customers/graphql/entity/customer.entity'
+import { Manager } from 'src/models/managers/graphql/entity/manager.entity'
+import { Valet } from 'src/models/valets/graphql/entity/valet.entity'
 import {
   LoginInput,
   LoginOutput,
@@ -11,7 +22,7 @@ import {
 } from './dtos/create-user.input'
 import { FindManyUserArgs, FindUniqueUserArgs } from './dtos/find.args'
 import { UpdateUserInput } from './dtos/update-user.input'
-import { User } from './entity/user.entity'
+import { AuthProvider, User } from './entity/user.entity'
 import { UsersService } from './users.service'
 
 @Resolver(() => User)
@@ -31,17 +42,13 @@ export class UsersResolver {
 
   @Mutation(() => User)
   async registerWithProvider(
-    @Args('registerWithProviderInput')
-    args: RegisterWithProviderInput,
+    @Args('registerWithProviderInput') args: RegisterWithProviderInput,
   ) {
     return this.usersService.registerWithProvider(args)
   }
 
   @Mutation(() => LoginOutput)
-  async login(
-    @Args('loginInput')
-    args: LoginInput,
-  ) {
+  async login(@Args('loginInput') args: LoginInput) {
     return this.usersService.login(args)
   }
 
@@ -51,16 +58,13 @@ export class UsersResolver {
     return this.usersService.findOne({ where: { uid: user.uid } })
   }
 
-  // @AllowAuthenticated('admin')
   @Query(() => [User], { name: 'users' })
   findAll(@Args() args: FindManyUserArgs) {
     return this.usersService.findAll(args)
   }
 
-  @AllowAuthenticated()
   @Query(() => User, { name: 'user' })
-  findOne(@Args() args: FindUniqueUserArgs, @GetUser() user: GetUserType) {
-    checkRowLevelPermission(user, args.where.uid)
+  findOne(@Args() args: FindUniqueUserArgs) {
     return this.usersService.findOne(args)
   }
 
@@ -86,5 +90,30 @@ export class UsersResolver {
     const userInfo = await this.prisma.user.findUnique(args)
     checkRowLevelPermission(user, userInfo.uid)
     return this.usersService.remove(args)
+  }
+
+  @Query(() => AuthProvider, { name: 'getAuthProvider', nullable: true })
+  getAuthProvider(@Args('uid') uid: string) {
+    return this.prisma.authProvider.findUnique({ where: { uid } })
+  }
+
+  @ResolveField(() => Admin, { nullable: true })
+  admin(@Parent() user: User) {
+    return this.prisma.admin.findUnique({ where: { uid: user.uid } })
+  }
+
+  @ResolveField(() => Manager, { nullable: true })
+  manager(@Parent() user: User) {
+    return this.prisma.manager.findUnique({ where: { uid: user.uid } })
+  }
+
+  @ResolveField(() => Valet, { nullable: true })
+  valet(@Parent() user: User) {
+    return this.prisma.valet.findUnique({ where: { uid: user.uid } })
+  }
+
+  @ResolveField(() => Customer, { nullable: true })
+  customer(@Parent() user: User) {
+    return this.prisma.customer.findUnique({ where: { uid: user.uid } })
   }
 }
