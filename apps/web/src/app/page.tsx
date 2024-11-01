@@ -1,5 +1,10 @@
-import { add } from '@parking-management-microservice/sample-lib'
+'use client'
+import { useQuery } from '@apollo/client'
+import { UsersDocument } from '@parking-management-microservice/network/src/gql/generated'
 
 export default function Home() {
-  return <main className="text-red-500">Hello {add(1, 2)}</main>
+  const { data } = useQuery(UsersDocument)
+  console.log(data, 'data')
+
+  return <main className="text-red-500">Hello </main>
 }
