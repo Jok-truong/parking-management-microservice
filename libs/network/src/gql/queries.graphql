@@ -1,0 +1,25 @@
+mutation RegisterWithCredentials(
+  $registerWithCredentialsInput: RegisterWithCredentialsInput!
+) {
+  registerWithCredentials(
+    registerWithCredentialsInput: $registerWithCredentialsInput
+  ) {
+    name
+  }
+}
+
+mutation Login($loginInput: LoginInput!) {
+  login(loginInput: $loginInput) {
+    user {
+      name
+    }
+    token
+  }
+}
+
+query Users {
+  users {
+    name
+    uid
+  }
+}
