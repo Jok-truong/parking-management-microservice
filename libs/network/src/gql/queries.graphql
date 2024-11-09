@@ -10,10 +10,12 @@ mutation RegisterWithCredentials(
 
 mutation Login($loginInput: LoginInput!) {
   login(loginInput: $loginInput) {
-    user {
-      name
-    }
     token
+    user {
+      uid
+      name
+      image
+    }
   }
 }
 
@@ -21,5 +23,37 @@ query Users {
   users {
     name
     uid
+  }
+}
+
+query GetAuthProvider($uid: String!) {
+  getAuthProvider(uid: $uid) {
+    type
+    uid
+  }
+}
+
+mutation RegisterWithProvider(
+  $registerWithProviderInput: RegisterWithProviderInput!
+) {
+  registerWithProvider(registerWithProviderInput: $registerWithProviderInput) {
+    image
+    name
+    uid
+    createdAt
+    updatedAt
+    admin {
+      uid
+    }
+    manager {
+      uid
+    }
+    valet {
+      uid
+    }
+    customer {
+      uid
+      displayName
+    }
   }
 }

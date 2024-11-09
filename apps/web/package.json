@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@parking-management-microservice/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,9 @@
     "@apollo/experimental-nextjs-app-support": "^0.11.5",
     "@parking-management-microservice/network": "*",
     "@parking-management-microservice/sample-lib": "*",
+    "@parking-management-microservice/ui": "*",
     "next": "14.2.13",
+    "next-auth": "^4.24.10",
     "react": "^18",
     "react-dom": "^18"
   },

@@ -1889,7 +1889,12 @@ export type LoginMutation = {
   login: {
     __typename?: 'LoginOutput'
     token: string
-    user: { __typename?: 'User'; name?: string | null }
+    user: {
+      __typename?: 'User'
+      uid: string
+      name?: string | null
+      image?: string | null
+    }
   }
 }
 
@@ -1898,6 +1903,43 @@ export type UsersQueryVariables = Exact<{ [key: string]: never }>
 export type UsersQuery = {
   __typename?: 'Query'
   users: Array<{ __typename?: 'User'; name?: string | null; uid: string }>
+}
+
+export type GetAuthProviderQueryVariables = Exact<{
+  uid: Scalars['String']['input']
+}>
+
+export type GetAuthProviderQuery = {
+  __typename?: 'Query'
+  getAuthProvider?: {
+    __typename?: 'AuthProvider'
+    type: AuthProviderType
+    uid: string
+  } | null
+}
+
+export type RegisterWithProviderMutationVariables = Exact<{
+  registerWithProviderInput: RegisterWithProviderInput
+}>
+
+export type RegisterWithProviderMutation = {
+  __typename?: 'Mutation'
+  registerWithProvider: {
+    __typename?: 'User'
+    image?: string | null
+    name?: string | null
+    uid: string
+    createdAt: any
+    updatedAt: any
+    admin?: { __typename?: 'Admin'; uid: string } | null
+    manager?: { __typename?: 'Manager'; uid: string } | null
+    valet?: { __typename?: 'Valet'; uid: string } | null
+    customer?: {
+      __typename?: 'Customer'
+      uid: string
+      displayName?: string | null
+    } | null
+  }
 }
 
 export const RegisterWithCredentialsDocument = {
@@ -1996,17 +2038,19 @@ export const LoginDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'token' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'user' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'uid' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'image' } },
                     ],
                   },
                 },
-                { kind: 'Field', name: { kind: 'Name', value: 'token' } },
               ],
             },
           },
@@ -2041,3 +2085,157 @@ export const UsersDocument = {
     },
   ],
 } as unknown as DocumentNode<UsersQuery, UsersQueryVariables>
+export const GetAuthProviderDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetAuthProvider' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'uid' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getAuthProvider' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'uid' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'uid' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'uid' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetAuthProviderQuery,
+  GetAuthProviderQueryVariables
+>
+export const RegisterWithProviderDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RegisterWithProvider' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'registerWithProviderInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'RegisterWithProviderInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'registerWithProvider' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'registerWithProviderInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'registerWithProviderInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'image' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'uid' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'admin' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'uid' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'manager' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'uid' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'valet' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'uid' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'customer' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'uid' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'displayName' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  RegisterWithProviderMutation,
+  RegisterWithProviderMutationVariables
+>
