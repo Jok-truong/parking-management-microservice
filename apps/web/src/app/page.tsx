@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main className="bg-primary">
       <BrandIcon />
-      <Button loading>Hello</Button>
+      <Button>Hello</Button>
       <div></div>
     </main>
   )

@@ -21,43 +21,35 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     CredentialsProvider({
-      name: 'credentials',
+      name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials, req) {
+      // Authorize function to validate user credentials
+      async authorize(credentials) {
+        // Implement credential validation logic
         if (!credentials) {
           throw new Error('Email and password are required')
         }
         const { email, password } = credentials
-        console.log({ email, password })
 
         try {
           const { data, error } = await fetchGraphQL({
             document: LoginDocument,
-            variables: {
-              loginInput: {
-                email,
-                password,
-              },
-            },
+            variables: { loginInput: { email, password } },
           })
-          console.log({ data, error })
+
           if (!data?.login.token || error) {
             throw new Error(
-              'Authcation failed. Please check your credentials and try again.',
+              'Authentication failed: Invalid credentials or user not found',
             )
           }
+          const uid = data.login.user.uid
+          const image = data.login.user.image
+          const name = data.login.user.name
 
-          const { uid, image, name } = data.login.user
-
-          return {
-            id: uid,
-            name,
-            email,
-            image,
-          }
+          return { id: uid, name, image, email }
         } catch (error) {}
         return null
       },

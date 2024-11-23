@@ -4,7 +4,11 @@ mutation RegisterWithCredentials(
   registerWithCredentials(
     registerWithCredentialsInput: $registerWithCredentialsInput
   ) {
+    updatedAt
+    uid
     name
+    image
+    createdAt
   }
 }
 
