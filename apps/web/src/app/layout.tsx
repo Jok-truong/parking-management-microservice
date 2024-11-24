@@ -1,5 +1,7 @@
 import { ApolloProvider } from '@parking-management-microservice/network/src/config/apollo'
 import '@parking-management-microservice/ui/src/app/globals.css'
+import { SessionProvider } from '@parking-management-microservice/ui/src/components/molecules/SessionProvider'
+
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 
@@ -26,13 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ApolloProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </ApolloProvider>
+      <SessionProvider>
+        <ApolloProvider>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            {children}
+          </body>
+        </ApolloProvider>
+      </SessionProvider>
     </html>
   )
 }

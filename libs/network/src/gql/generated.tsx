@@ -1877,7 +1877,14 @@ export type RegisterWithCredentialsMutationVariables = Exact<{
 
 export type RegisterWithCredentialsMutation = {
   __typename?: 'Mutation'
-  registerWithCredentials: { __typename?: 'User'; name?: string | null }
+  registerWithCredentials: {
+    __typename?: 'User'
+    image?: string | null
+    name?: string | null
+    uid: string
+    createdAt: any
+    updatedAt: any
+  }
 }
 
 export type LoginMutationVariables = Exact<{
@@ -1984,7 +1991,11 @@ export const RegisterWithCredentialsDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'image' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'uid' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
               ],
             },
           },
