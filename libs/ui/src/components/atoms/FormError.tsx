@@ -13,6 +13,5 @@ export const FormError = ({ error }: FormErrorProps) => {
       </div>
     )
   }
-
   return null
 }

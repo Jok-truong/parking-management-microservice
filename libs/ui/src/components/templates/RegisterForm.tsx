@@ -17,7 +17,6 @@ export interface IRegisterFormProps {
   className?: string
   role?: Role
 }
-
 export const RegisterForm = ({ className }: IRegisterFormProps) => {
   const {
     register,
